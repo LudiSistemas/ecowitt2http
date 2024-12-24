@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - timescaledb
+      - mqtt
+    environment:
+      - TZ=UTC
+    restart: unless-stopped
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=weather_data
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=your_password
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mqtt:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./backend/mqtt/config:/mosquitto/config
+      - ./backend/mqtt/data:/mosquitto/data
+      - ./backend/mqtt/log:/mosquitto/log
+    restart: unless-stopped
+
+volumes:
+  timescaledb_data: 

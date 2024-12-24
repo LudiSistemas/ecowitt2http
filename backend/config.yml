@@ -13,7 +13,7 @@ relay:
 
 mqtt:
   enabled: true
-  host: "localhost"
+  host: "mqtt"  # Docker service name
   port: 1883
   username: ""  # Optional
   password: ""  # Optional
@@ -21,7 +21,7 @@ mqtt:
 
 database:
   type: "timescale"  # or "influx"
-  host: "localhost"
+  host: "timescaledb"  # Docker service name
   port: 5432
   database: "weather_data"
   username: "postgres"
