@@ -4,6 +4,7 @@ import yaml
 import aiohttp
 import asyncio
 from data_handler import WeatherDataHandler
+from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,6 +32,8 @@ class EcowittServer:
     def setup_routes(self):
         self.app.router.add_post("/data/report", self.handle_report)
         self.app.router.add_get("/data/report", self.handle_report)
+        self.app.router.add_get("/api/weather/current", self.get_current_data)
+        self.app.router.add_get("/api/weather/history", self.get_historical_data)
         
     async def relay_data(self, data):
         """Relay data to target server."""
@@ -96,6 +99,31 @@ class EcowittServer:
     async def start(self):
         """Initialize the server"""
         await self.data_handler.init()
+
+    async def get_current_data(self, request):
+        """Get most recent weather data"""
+        data = await self.data_handler.get_data(
+            datetime.now() - timedelta(minutes=5)
+        )
+        return web.json_response(data[0] if data else {})
+
+    async def get_historical_data(self, request):
+        """Get historical weather data"""
+        start = request.query.get('start')
+        end = request.query.get('end')
+        
+        try:
+            start_time = datetime.fromisoformat(start)
+            end_time = datetime.fromisoformat(end) if end else None
+            
+            data = await self.data_handler.get_data(start_time, end_time)
+            return web.json_response(data)
+            
+        except ValueError:
+            return web.Response(
+                text="Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)",
+                status=400
+            )
 
 if __name__ == "__main__":
     server = EcowittServer()
