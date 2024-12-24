@@ -10,3 +10,19 @@ relay:
   target_host: "homeassistant.local"  # Target server hostname/IP
   target_port: 8123  # Home Assistant default port
   target_path: "/api/webhook/your_webhook_id"  # Home Assistant webhook endpoint
+
+mqtt:
+  enabled: true
+  host: "localhost"
+  port: 1883
+  username: ""  # Optional
+  password: ""  # Optional
+  topic: "weather/ecowitt"
+
+database:
+  type: "timescale"  # or "influx"
+  host: "localhost"
+  port: 5432
+  database: "weather_data"
+  username: "postgres"
+  password: "your_password"

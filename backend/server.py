@@ -3,6 +3,7 @@ import logging
 import yaml
 import aiohttp
 import asyncio
+from data_handler import WeatherDataHandler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ class EcowittServer:
         self.app = web.Application()
         self.setup_routes()
         self.client_session = None
+        self.data_handler = WeatherDataHandler(self.config)
 
     def load_config(self, config_path):
         """Load configuration from YAML file."""
@@ -61,6 +63,9 @@ class EcowittServer:
 
             logger.info(f"Received data: {dict(data)}")
             
+            # Process and store data
+            processed_data = await self.data_handler.process_data(dict(data))
+            
             # Relay data if enabled
             if self.config["relay"]["enabled"]:
                 await self.relay_data(data)
@@ -87,6 +92,10 @@ class EcowittServer:
         finally:
             loop = asyncio.get_event_loop()
             loop.run_until_complete(self.cleanup())
+
+    async def start(self):
+        """Initialize the server"""
+        await self.data_handler.init()
 
 if __name__ == "__main__":
     server = EcowittServer()
