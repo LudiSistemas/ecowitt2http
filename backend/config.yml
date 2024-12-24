@@ -1,0 +1,12 @@
+# Ecowitt Server Configuration
+server:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8080
+
+# Relay Configuration
+relay:
+  enabled: false  # Set to true to enable relaying
+  target_host: "homeassistant.local"  # Target server hostname/IP
+  target_port: 8123  # Home Assistant default port
+  target_path: "/api/webhook/your_webhook_id"  # Home Assistant webhook endpoint
