@@ -1,0 +1,10 @@
+nginx:
+  version: "1.24-alpine"  # or any other version you prefer
+  port: 80
+  server_name: "localhost"
+
+services:
+  frontend:
+    port: 5000
+  backend:
+    port: 8080 
